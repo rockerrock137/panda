@@ -139,6 +139,8 @@ class TorqueSteeringSafetyTestBase(PandaSafetyTestBase, abc.ABC):
   MAX_RT_DELTA = 0
   RT_INTERVAL = 0
 
+  STEER_STEP = 0  # frame % step == 0 -> send
+
   # Safety around steering req bit
   MIN_VALID_STEERING_FRAMES = 0
   MAX_INVALID_STEERING_FRAMES = 0
@@ -153,6 +155,16 @@ class TorqueSteeringSafetyTestBase(PandaSafetyTestBase, abc.ABC):
   @abc.abstractmethod
   def _torque_cmd_msg(self, torque, steer_req=1):
     pass
+
+  def test_max_rt_delta_range(self):
+    RT_DELTA_TOL = 1.2  # 20%
+    rt_interval_sec = self.RT_INTERVAL * 1e-6
+    expected_max_rt_delta = round(self.MAX_TORQUE * rt_interval_sec * RT_DELTA_TOL)
+
+    expected_max_rt_delta = self.MAX_RATE_UP * 100 / self.STEER_STEP / 4 * RT_DELTA_TOL
+
+    print(self.MAX_RT_DELTA, expected_max_rt_delta)
+    self.assertEqual(self.MAX_RT_DELTA, expected_max_rt_delta)
 
   def _set_prev_torque(self, t):
     self.safety.set_desired_torque_last(t)

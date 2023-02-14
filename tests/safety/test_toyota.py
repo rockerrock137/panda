@@ -42,6 +42,7 @@ class TestToyotaSafety(common.PandaSafetyTest, common.InterceptorSafetyTest,
   RT_INTERVAL = 250000
   MAX_TORQUE_ERROR = 350
   TORQUE_MEAS_TOLERANCE = 1  # toyota safety adds one to be conservative for rounding
+  STEER_STEP = 1
   EPS_SCALE = 73
 
   # Safety around steering req bit

@@ -69,6 +69,7 @@ class TestGmSafetyBase(common.PandaSafetyTest, common.DriverTorqueSteeringSafety
   RT_INTERVAL = 250000
   DRIVER_TORQUE_ALLOWANCE = 50
   DRIVER_TORQUE_FACTOR = 4
+  STEER_STEP = 3
 
   MAX_GAS = 0
   MAX_REGEN = 0
