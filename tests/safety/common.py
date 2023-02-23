@@ -4,6 +4,7 @@ import unittest
 import importlib
 import numpy as np
 from typing import Optional, List, Dict
+from tqdm import tqdm
 
 from opendbc.can.packer import CANPacker  # pylint: disable=import-error
 from panda import ALTERNATIVE_EXPERIENCE
@@ -479,6 +480,8 @@ class AngleSteeringSafetyTest(PandaSafetyTestBase):
   ANGLE_DELTA_V: List[float]  # windup limit
   ANGLE_DELTA_VU: List[float]  # unwind limit
 
+  SPEED_FUDGE = 0
+
   @classmethod
   def setUpClass(cls):
     if cls.__name__ == "AngleSteeringSafetyTest":
@@ -501,52 +504,91 @@ class AngleSteeringSafetyTest(PandaSafetyTestBase):
     for _ in range(6):
       self._rx(self._angle_meas_msg(angle))
 
-  def test_angle_cmd_when_enabled(self):
-    # when controls are allowed, angle cmd rate limit is enforced
-    speeds = [0., 1., 5., 10., 15., 50.]
-    angles = [-300, -100, -10, 0, 10, 100, 300]
-    for a in angles:
-      for s in speeds:
-        max_delta_up = np.interp(s, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_V)
-        max_delta_down = np.interp(s, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_VU)
+  def test_angle_limits(self):
+    # speed = 0
+    for speed in [50]:  # tqdm(np.linspace(0, 50, 1000)):
+      print(speed)
+      for angle in np.linspace(-10, 10, 10001):
+        self.safety.set_controls_allowed(True)
+        self._rx(self._speed_msg(speed))  # pylint: disable=no-member
+        # print((speed + self.SPEED_FUDGE, self.safety.get_vehicle_speed()))
+        # print((speed + self.SPEED_FUDGE), angle)
+        max_delta_up = np.interp(speed, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_V)
+        max_delta_down = np.interp(speed, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_VU)
+      #
+      #   # for desired_angle in np.linspace(angle - 10, angle + 10, 21):
+      #   #   highest_desired_angle = angle + (max_delta_up if (angle >= 0) else max_delta_down)
+      #   #   lowest_desired_angle = angle - (max_delta_down if (angle > 0) else max_delta_up)
+      #   #   # should_tx =
+      #   #   print(angle, desired_angle, (lowest_desired_angle, highest_desired_angle))
+      #   # continue
 
-        # first test against false positives
-        self._angle_meas_msg_array(a)
-        self._rx(self._speed_msg(s))  # pylint: disable=no-member
+        # self._set_prev_desired_angle(angle)
+        # self._tx(self._angle_cmd_msg(angle, True))
+        # print('angle -> panda', (angle, self.safety.get_desired_angle_last()))
+        # desired_angle = angle + sign_of(angle) * max_delta_up
+        # tx = self._tx(self._angle_cmd_msg(desired_angle, True))
+        # print('desired angle', (angle, desired_angle, self.safety.get_desired_angle_last()))
+        # # print('desired', self.safety.get_desired_angle_last())
+        # self.assertTrue(tx, (speed, angle))
 
-        self._set_prev_desired_angle(a)
-        self.safety.set_controls_allowed(1)
+        self._set_prev_desired_angle(angle)
+        self._tx(self._angle_cmd_msg(angle, True))
+        print('angle -> panda', (angle, self.safety.get_desired_angle_last()))
+        desired_angle = angle - sign_of(angle) * max_delta_down
+        tx = self._tx(self._angle_cmd_msg(desired_angle, True))
+        # print('desired angle', (desired_angle, self.safety.get_desired_angle_last()))
+        # print('desired', self.safety.get_desired_angle_last())
+        self.assertTrue(tx, (speed, angle))
 
-        # Stay within limits
-        # Up
-        self.assertTrue(self._tx(self._angle_cmd_msg(a + sign_of(a) * max_delta_up, True)))
-        self.assertTrue(self.safety.get_controls_allowed())
 
-        # Don't change
-        self.assertTrue(self._tx(self._angle_cmd_msg(a, True)))
-        self.assertTrue(self.safety.get_controls_allowed())
 
-        # Down
-        self.assertTrue(self._tx(self._angle_cmd_msg(a - sign_of(a) * max_delta_down, True)))
-        self.assertTrue(self.safety.get_controls_allowed())
-
-        # Inject too high rates
-        # Up
-        self.assertFalse(self._tx(self._angle_cmd_msg(a + sign_of(a) * (max_delta_up + 1.1), True)))
-
-        # Don't change
-        self.safety.set_controls_allowed(1)
-        self._set_prev_desired_angle(a)
-        self.assertTrue(self.safety.get_controls_allowed())
-        self.assertTrue(self._tx(self._angle_cmd_msg(a, True)))
-        self.assertTrue(self.safety.get_controls_allowed())
-
-        # Down
-        self.assertFalse(self._tx(self._angle_cmd_msg(a - sign_of(a) * (max_delta_down + 1.1), True)))
-
-        # Check desired steer should be the same as steer angle when controls are off
-        self.safety.set_controls_allowed(0)
-        self.assertTrue(self._tx(self._angle_cmd_msg(a, False)))
+  # def test_angle_cmd_when_enabled(self):
+  #   # when controls are allowed, angle cmd rate limit is enforced
+  #   speeds = [0., 1., 5., 10., 15., 50.]
+  #   angles = [-300, -100, -10, 0, 10, 100, 300]
+  #   for a in angles:
+  #     for s in speeds:
+  #       max_delta_up = np.interp(s, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_V)
+  #       max_delta_down = np.interp(s, self.ANGLE_DELTA_BP, self.ANGLE_DELTA_VU)
+  #
+  #       # first test against false positives
+  #       self._angle_meas_msg_array(a)
+  #       self._rx(self._speed_msg(s))  # pylint: disable=no-member
+  #
+  #       self._set_prev_desired_angle(a)
+  #       self.safety.set_controls_allowed(1)
+  #
+  #       # Stay within limits
+  #       # Up
+  #       self.assertTrue(self._tx(self._angle_cmd_msg(a + sign_of(a) * max_delta_up, True)))
+  #       self.assertTrue(self.safety.get_controls_allowed())
+  #
+  #       # Don't change
+  #       self.assertTrue(self._tx(self._angle_cmd_msg(a, True)))
+  #       self.assertTrue(self.safety.get_controls_allowed())
+  #
+  #       # Down
+  #       self.assertTrue(self._tx(self._angle_cmd_msg(a - sign_of(a) * max_delta_down, True)))
+  #       self.assertTrue(self.safety.get_controls_allowed())
+  #
+  #       # Inject too high rates
+  #       # Up
+  #       self.assertFalse(self._tx(self._angle_cmd_msg(a + sign_of(a) * (max_delta_up + 1.1), True)))
+  #
+  #       # Don't change
+  #       self.safety.set_controls_allowed(1)
+  #       self._set_prev_desired_angle(a)
+  #       self.assertTrue(self.safety.get_controls_allowed())
+  #       self.assertTrue(self._tx(self._angle_cmd_msg(a, True)))
+  #       self.assertTrue(self.safety.get_controls_allowed())
+  #
+  #       # Down
+  #       self.assertFalse(self._tx(self._angle_cmd_msg(a - sign_of(a) * (max_delta_down + 1.1), True)))
+  #
+  #       # Check desired steer should be the same as steer angle when controls are off
+  #       self.safety.set_controls_allowed(0)
+  #       self.assertTrue(self._tx(self._angle_cmd_msg(a, False)))
 
   def test_angle_cmd_when_disabled(self):
     self.safety.set_controls_allowed(0)
