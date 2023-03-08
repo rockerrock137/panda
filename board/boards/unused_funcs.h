@@ -22,9 +22,8 @@ uint32_t unused_read_current(void) {
   return 0U;
 }
 
-void unused_board_tick(bool ignition, bool usb_enum, bool heartbeat_seen) {
+void unused_board_tick(bool ignition, bool heartbeat_seen) {
   UNUSED(ignition);
-  UNUSED(usb_enum);
   UNUSED(heartbeat_seen);
 }
 

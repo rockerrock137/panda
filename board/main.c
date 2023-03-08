@@ -415,7 +415,7 @@ int main(void) {
         }
       #endif
     } else {
-      if (deepsleep_allowed && !usb_enumerated && !check_started() && ignition_seen && (heartbeat_counter > 20U)) {
+      if (deepsleep_allowed && !check_started() && ignition_seen && (heartbeat_counter > 20U)) {
         usb_soft_disconnect(true);
         fan_set_power(0U);
         NVIC_DisableIRQ(TICK_TIMER_IRQ);

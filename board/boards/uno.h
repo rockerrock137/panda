@@ -126,9 +126,8 @@ void uno_set_can_mode(uint8_t mode){
   }
 }
 
-void uno_board_tick(bool ignition, bool usb_enum, bool heartbeat_seen) {
+void uno_board_tick(bool ignition, bool heartbeat_seen) {
   UNUSED(ignition);
-  UNUSED(usb_enum);
   UNUSED(heartbeat_seen);
   if (bootkick_timer != 0U) {
     bootkick_timer--;
