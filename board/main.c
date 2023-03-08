@@ -243,7 +243,7 @@ void tick_handler(void) {
           // TODO: need a SPI equivalent
           // If enumerated but no heartbeat (phone up, boardd not running), or when the SOM GPIO is pulled high by the ABL,
           // turn the fan on to cool the device
-          if(usb_enumerated || current_board->read_som_gpio()){
+          if (current_board->read_som_gpio()) {
             fan_set_power(50U);
           } else {
             fan_set_power(0U);
