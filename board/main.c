@@ -178,7 +178,7 @@ void tick_handler(void) {
 
       // tick drivers at 1Hz
       const bool recent_heartbeat = heartbeat_counter == 0U;
-      current_board->board_tick(check_started(), usb_enumerated, recent_heartbeat);
+      current_board->board_tick(check_started(), recent_heartbeat);
 
       // increase heartbeat counter and cap it at the uint32 limit
       if (heartbeat_counter < __UINT32_MAX__) {
@@ -240,14 +240,8 @@ void tick_handler(void) {
           // Also disable IR when the heartbeat goes missing
           current_board->set_ir_power(0U);
 
-          // TODO: need a SPI equivalent
-          // If enumerated but no heartbeat (phone up, boardd not running), or when the SOM GPIO is pulled high by the ABL,
-          // turn the fan on to cool the device
-          if (current_board->read_som_gpio()) {
-            fan_set_power(50U);
-          } else {
-            fan_set_power(0U);
-          }
+          // Enable the fan when the ABL pulls the GPIO high to cool the device
+          fan_set_power(current_board->read_som_gpio() ? 50U : 0U);
         }
       }
 
