@@ -2,8 +2,12 @@ import os
 import time
 
 from panda import Panda, PandaDFU, McuType, BASEDIR
-from .helpers import test_all_pandas, panda_connect_and_init, check_signature
+from .config import test_all_pandas, panda_connect_and_init
 
+
+def check_signature(p):
+  assert not p.bootstub, "Flashed firmware not booting. Stuck in bootstub."
+  assert p.up_to_date()
 
 # TODO: make more comprehensive bootstub tests and run on a few production ones + current
 # TODO: also test release-signed app

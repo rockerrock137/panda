@@ -3,7 +3,8 @@ import time
 from flaky import flaky
 
 from panda import Panda
-from .helpers import SPEED_NORMAL, SPEED_GMLAN, time_many_sends, test_all_gmlan_pandas, test_all_pandas, panda_connect_and_init
+from .config import SPEED_NORMAL, SPEED_GMLAN, test_all_gmlan_pandas, test_all_pandas, panda_connect_and_init
+from .helpers import time_many_sends
 
 @test_all_pandas
 @panda_connect_and_init

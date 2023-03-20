@@ -1,7 +1,7 @@
 import time
 
 from panda import Panda
-from panda.tests.hitl.helpers import test_all_pandas, panda_connect_and_init
+from .config import test_all_pandas, panda_connect_and_init
 
 @test_all_pandas
 @panda_connect_and_init
