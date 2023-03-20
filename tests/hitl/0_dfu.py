@@ -1,5 +1,5 @@
 from panda import Panda, PandaDFU
-from .helpers import test_all_pandas, panda_connect_and_init
+from .config import test_all_pandas, panda_connect_and_init
 
 @test_all_pandas
 @panda_connect_and_init

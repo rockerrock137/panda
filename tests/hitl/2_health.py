@@ -2,7 +2,7 @@ import time
 
 from panda import Panda
 from panda_jungle import PandaJungle  # pylint: disable=import-error
-from .helpers import panda_jungle, test_all_pandas, test_all_gen2_pandas, panda_connect_and_init
+from .config import panda_jungle, test_all_pandas, test_all_gen2_pandas, panda_connect_and_init
 
 
 @test_all_pandas

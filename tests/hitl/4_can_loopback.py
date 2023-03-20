@@ -7,7 +7,8 @@ from collections import defaultdict
 from nose.tools import assert_equal, assert_less, assert_greater
 
 from panda import Panda
-from .helpers import panda_jungle, time_many_sends, test_all_pandas, test_all_gen2_pandas, clear_can_buffers, panda_connect_and_init, PARTIAL_TESTS
+from .config import panda_jungle, test_all_pandas, test_all_gen2_pandas, panda_connect_and_init, PARTIAL_TESTS
+from .helpers import time_many_sends, clear_can_buffers
 
 @test_all_pandas
 @flaky(max_runs=3, min_passes=1)

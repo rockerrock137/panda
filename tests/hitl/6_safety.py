@@ -2,7 +2,7 @@ import time
 from nose.tools import assert_equal
 
 from panda import Panda
-from .helpers import test_all_pandas, panda_connect_and_init
+from .config import test_all_pandas, panda_connect_and_init
 
 @test_all_pandas
 @panda_connect_and_init
