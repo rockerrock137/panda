@@ -125,7 +125,7 @@ void red_init(void) {
 
   // B14: usb load switch, enabled by pull resistor on board, obsolete for red panda
   set_gpio_output_type(GPIOB, 14, OUTPUT_TYPE_OPEN_DRAIN);
-  set_gpio_pullup(GPIOB, 14, PULL_NONE);
+  set_gpio_pullup(GPIOB, 14, PULL_UP);
   set_gpio_mode(GPIOB, 14, MODE_OUTPUT);
   set_gpio_output(GPIOB, 14, 1);
 
@@ -178,6 +178,9 @@ const board board_red = {
   .has_canfd = true,
   .has_rtc_battery = false,
   .fan_max_rpm = 0U,
+  .adc_scale = 5539U,
+  .fan_stall_recovery = false,
+  .fan_enable_cooldown_time = 0U,
   .init = red_init,
   .enable_can_transceiver = red_enable_can_transceiver,
   .enable_can_transceivers = red_enable_can_transceivers,
@@ -189,5 +192,6 @@ const board board_red = {
   .set_fan_enabled = unused_set_fan_enabled,
   .set_ir_power = unused_set_ir_power,
   .set_phone_power = unused_set_phone_power,
-  .set_siren = unused_set_siren
+  .set_siren = unused_set_siren,
+  .read_som_gpio = unused_read_som_gpio
 };
