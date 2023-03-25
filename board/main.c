@@ -155,6 +155,10 @@ void tick_handler(void) {
     if (loop_counter == 0U) {
       can_live = pending_can_live;
 
+      #ifdef STM32H7
+      //print("0x"); puth(interrupts[OTG_HS_IRQn].call_counter); print("/s\n");
+      #endif
+
       //puth(usart1_dma); print(" "); puth(DMA2_Stream5->M0AR); print(" "); puth(DMA2_Stream5->NDTR); print("\n");
 
       // reset this every 16th pass

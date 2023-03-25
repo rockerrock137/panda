@@ -42,7 +42,9 @@ void handle_interrupt(IRQn_Type irq_type){
   interrupt_depth += 1U;
   EXIT_CRITICAL();
 
-  interrupts[irq_type].call_counter++;
+  if (interrupts[irq_type].call_counter < __UINT32_MAX__) {
+    interrupts[irq_type].call_counter++;
+  }
   interrupts[irq_type].handler();
 
   // Check that the interrupts don't fire too often
@@ -64,6 +66,9 @@ void handle_interrupt(IRQn_Type irq_type){
 // Every second
 void interrupt_timer_handler(void) {
   if (INTERRUPT_TIMER->SR != 0) {
+    #ifdef STM32H7
+    print("0x"); puth(interrupts[OTG_HS_IRQn].call_counter); print("/s\n");
+    #endif
     // Reset interrupt counters
     for(uint16_t i=0U; i<NUM_INTERRUPTS; i++){
       interrupts[i].call_counter = 0U;

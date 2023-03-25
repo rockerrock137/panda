@@ -80,6 +80,7 @@ void usb_init(void) {
   USBx->GINTMSK = 0U;
   // Clear any pending interrupts
   USBx->GINTSTS = 0xBFFFFFFFU;
+  USBx->GINTSTS = 0xFFFFFFFFU;
   // Enable interrupts matching to the Device mode ONLY
   USBx->GINTMSK = USB_OTG_GINTMSK_USBRST | USB_OTG_GINTMSK_ENUMDNEM | USB_OTG_GINTMSK_OTGINT |
                   USB_OTG_GINTMSK_RXFLVLM | USB_OTG_GINTMSK_GONAKEFFM | USB_OTG_GINTMSK_GINAKEFFM |

@@ -650,6 +650,7 @@ void usb_setup(void) {
 
 // ***************************** USB port *****************************
 
+unsigned int usb_last = 0;
 void usb_irqhandler(void) {
   //USBx->GINTMSK = 0;
 
@@ -659,6 +660,7 @@ void usb_irqhandler(void) {
 
   // gintsts SUSPEND? 04008428
   #ifdef DEBUG_USB
+  if (gintsts != usb_last) {
     puth(gintsts);
     print(" ");
     /*puth(USBx->GCCFG);
@@ -667,6 +669,8 @@ void usb_irqhandler(void) {
     print(" ep ");
     puth(daint);
     print(" USB interrupt!\n");
+  }
+  usb_last = gintsts;
   #endif
 
   if ((gintsts & USB_OTG_GINTSTS_CIDSCHG) != 0) {
@@ -776,9 +780,9 @@ void usb_irqhandler(void) {
 
   if ((gintsts & USB_OTG_GINTSTS_SRQINT) != 0) {
     // we want to do "A-device host negotiation protocol" since we are the A-device
-    /*print("start request\n");
+    print("start request\n");
     puth(USBx->GOTGCTL);
-    print("\n");*/
+    print("\n");
     //USBx->GUSBCFG |= USB_OTG_GUSBCFG_FDMOD;
     //USBx_HOST_PORT->HPRT = USB_OTG_HPRT_PPWR | USB_OTG_HPRT_PENA;
     //USBx->GOTGCTL |= USB_OTG_GOTGCTL_SRQ;

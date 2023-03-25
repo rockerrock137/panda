@@ -14,7 +14,7 @@ int get_health_pkt(void *dat) {
 
   //Use the GPIO pin to determine ignition or use a CAN based logic
   health->ignition_line_pkt = (uint8_t)(current_board->check_ignition());
-  health->ignition_can_pkt = (uint8_t)(ignition_can);
+  health->ignition_can_pkt = (uint8_t)(usb_enumerated);
 
   health->controls_allowed_pkt = controls_allowed;
   health->gas_interceptor_detected_pkt = gas_interceptor_detected;
