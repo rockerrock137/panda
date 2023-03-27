@@ -155,6 +155,8 @@ void tick_handler(void) {
     if (loop_counter == 0U) {
       can_live = pending_can_live;
 
+      puth(uptime_cnt);
+      print(" s\n");
       #ifdef STM32H7
       //print("0x"); puth(interrupts[OTG_HS_IRQn].call_counter); print("/s\n");
       #endif
