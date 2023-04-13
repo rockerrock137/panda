@@ -23,14 +23,14 @@ if __name__ == "__main__":
     'reconnect',
     'up_to_date',
     'health',
-    'flash',
+    #'flash',
   ]
   for f in fxn:
     with print_time(f"Panda.{f}()"):
       getattr(p, f)()
 
 
-  for n in (0, 10, 100, 1000, 10000):
-    to_send = get_random_can_messages(n)
-    with print_time(f"Panda.can_send_many() - {n} msgs"):
-      p.can_send_many(to_send)
+  for n in range(6):
+    msgs = get_random_can_messages(int(10**n))
+    with print_time(f"Panda.can_send_many() - {len(msgs)} msgs"):
+      p.can_send_many(msgs)
