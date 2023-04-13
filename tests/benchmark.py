@@ -29,8 +29,12 @@ if __name__ == "__main__":
     with print_time(f"Panda.{f}()"):
       getattr(p, f)()
 
+  p.set_can_loopback(True)
 
   for n in range(6):
     msgs = get_random_can_messages(int(10**n))
     with print_time(f"Panda.can_send_many() - {len(msgs)} msgs"):
       p.can_send_many(msgs)
+
+  with print_time(f"Panda.can_recv()"):
+    m = p.can_recv()
