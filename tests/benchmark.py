@@ -3,6 +3,8 @@ import time
 from contextlib import contextmanager
 
 from panda import Panda
+from panda.tests.hitl.helpers import get_random_can_messages
+
 
 @contextmanager
 def print_time(desc):
@@ -26,3 +28,9 @@ if __name__ == "__main__":
   for f in fxn:
     with print_time(f"Panda.{f}()"):
       getattr(p, f)()
+
+
+  for n in (0, 10, 100, 1000, 10000):
+    to_send = get_random_can_messages(n)
+    with print_time(f"Panda.can_send_many() - {n} msgs"):
+      p.can_send_many(to_send)
