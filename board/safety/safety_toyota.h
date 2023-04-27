@@ -214,7 +214,7 @@ static int toyota_tx_hook(CANPacket_t *to_send) {
           tx = 0;
         }
         if (setme_x64 > 100) {
-          tx = 0;
+          tx = 1;
         }
       } else {
         // block LTA msgs with actuation requests
